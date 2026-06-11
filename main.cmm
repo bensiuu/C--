@@ -1,0 +1,5 @@
+int a = 4
+console_log("a = ", a)
+if(a != 5)
+    console_log("warunek spelniony")
+console_log("warunek niespelniony")
