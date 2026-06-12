@@ -1,115 +1,132 @@
 # C--
 
-A simple interpreted programming language written in Python.
+A simple interpreted programming language inspired by C, written in Python.
 
 ## Features
 
-- Integer variables
-- String variables
-- Console output
-- Mathematical expressions
-- Conditional statements (`if` / `else`)
-- Nested `if` statements
-- Indentation-based blocks
-- Logical operators (`and`, `or`)
-- Comparison operators:
-  - `==`
-  - `!=`
-  - `>`
-  - `<`
-  - `>=`
-  - `<=`
+* Integer variables (`int`)
+* String variables (`str`)
+* Variable reassignment
+* Arithmetic expressions
 
-## Example
+  * `+`
+  * `-`
+  * `*`
+  * `/`
+  * Parentheses
+* Conditional statements
 
-```c
-int a = -1
+  * `if`
+  * `else`
+  * Nested conditions
+* Logical operators
 
-console_log("a = ", a)
+  * `and`
+  * `or`
+* Comparison operators
 
-if(a)
-    if(a >= -10)
-        console_log(5 + a)
-    else
-        console_log("B")
-else
-    console_log("C")
-```
-
-Output:
-
-```text
-a = -1
-4
-```
+  * `==`
+  * `!=`
+  * `>`
+  * `<`
+  * `>=`
+  * `<=`
+* Console output using `console_log()`
 
 ## Installation
+
+Clone the repository:
 
 ```bash
 git clone https://github.com/bensiuu/C--.git
 cd C--
 ```
 
-## Usage
+Run a program:
 
 ```bash
-python3 interpreter.py program.cmm
+python3 interpreter.py example.cmm
+```
+
+## Example
+
+```c
+int score = 15
+int lives = 3
+
+console_log("=== GAME START ===")
+
+score = score + 10
+
+if(score >= 20)
+    console_log("Bonus unlocked!")
+
+    if(lives > 0)
+        console_log("Player is alive")
+    else
+        console_log("Game Over")
+else
+    console_log("Need more points")
+
+console_log("Final score: ", score)
 ```
 
 ## Syntax
 
-### Integer variable
+### Variables
 
 ```c
 int age = 16
-```
-
-### String variable
-
-```c
 str name = "Jakub"
 ```
 
-### Output
+### Assignment
 
 ```c
-console_log("Hello")
-console_log(name)
-console_log("Age: ", age)
-```
-
-### Math
-
-```c
-console_log(5 + 5)
-console_log(age + 10)
-console_log(age * 2)
+age = age + 1
+age = age * 2
 ```
 
 ### Conditions
 
 ```c
-if(age >= 16)
-    console_log("Allowed")
+if(age >= 18)
+    console_log("Adult")
 else
-    console_log("Denied")
+    console_log("Minor")
 ```
 
-### Logical operators
+### Boolean Conditions
 
 ```c
-if(age >= 16 and age < 18)
+if(age > 10 and age < 20)
     console_log("Teenager")
 ```
 
-## Roadmap
+### Expressions
 
-- Functions
-- Loops
-- User input
-- Boolean variables
-- Better expression parser
-- Modules / imports
+```c
+console_log(2 + 3 * 4)
+console_log((2 + 3) * 4)
+```
+
+## Project Status
+
+Current implementation includes:
+
+* Variables
+* Arithmetic expressions
+* Conditional statements
+* Nested `if/else`
+* Expression evaluation through Python AST
+
+Planned features:
+
+* Loops (`while`)
+* Functions
+* Arrays
+* User-defined procedures
+* Better parser and error reporting
 
 ## License
 
