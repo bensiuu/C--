@@ -4,13 +4,44 @@ A simple interpreted programming language written in Python.
 
 ## Features
 
-* **Integer variables**
-* **String variables**
-* **Variable logging**
-* **Conditional statements (`if`)**
-* **Indentation-based blocks**
-* **Logical operators (`and`, `or`)**
-* **Command-line execution**
+- Integer variables
+- String variables
+- Console output
+- Mathematical expressions
+- Conditional statements (`if` / `else`)
+- Nested `if` statements
+- Indentation-based blocks
+- Logical operators (`and`, `or`)
+- Comparison operators:
+  - `==`
+  - `!=`
+  - `>`
+  - `<`
+  - `>=`
+  - `<=`
+
+## Example
+
+```c
+int a = -1
+
+console_log("a = ", a)
+
+if(a)
+    if(a >= -10)
+        console_log(5 + a)
+    else
+        console_log("B")
+else
+    console_log("C")
+```
+
+Output:
+
+```text
+a = -1
+4
+```
 
 ## Installation
 
@@ -21,72 +52,65 @@ cd C--
 
 ## Usage
 
-Create a source file:
-
-```cmm
-int age = 6
-str name = "My name"
-
-console_log("age = ", age)
-console_log("name = ", name)
-
-if(a < 10)
-    console_log(name," is less than 10")
-```
-
-Run the interpreter:
-
 ```bash
 python3 interpreter.py program.cmm
 ```
 
 ## Syntax
 
-### Integer Variables
+### Integer variable
 
-```cmm
+```c
 int age = 16
 ```
 
-### String Variables
+### String variable
 
-```cmm
-str text = "Hello World"
+```c
+str name = "Jakub"
 ```
 
-### Logging
+### Output
 
-```cmm
+```c
+console_log("Hello")
+console_log(name)
 console_log("Age: ", age)
+```
+
+### Math
+
+```c
+console_log(5 + 5)
+console_log(age + 10)
+console_log(age * 2)
 ```
 
 ### Conditions
 
-```cmm
-if(age == 16)
-    log("Correct")
+```c
+if(age >= 16)
+    console_log("Allowed")
+else
+    console_log("Denied")
 ```
 
-### Logical Operators
+### Logical operators
 
-```cmm
-if(age == 16 and score > 50)
-    log("Passed")
+```c
+if(age >= 16 and age < 18)
+    console_log("Teenager")
 ```
 
 ## Roadmap
 
-* [x] Variables 
-* [x] Logging
-* [x] Conditions
-* [x] Indentation-based blocks
-* [ ] Loops
-* [ ] Functions
-* [ ] Imports
-* [ ] Lists
-* [ ] Better error handling
+- Functions
+- Loops
+- User input
+- Boolean variables
+- Better expression parser
+- Modules / imports
 
 ## License
 
-This project is open source and available under the MIT License.
-  
+MIT License
