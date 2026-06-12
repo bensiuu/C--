@@ -1,5 +1,10 @@
-int a = 4
+int a = 10
 console_log("a = ", a)
-if(a != 5)
-    console_log("warunek spelniony")
-console_log("warunek niespelniony")
+
+if(a > 5)
+    if(a >= 10)
+        console_log("A")
+    else
+        console_log("B")
+else
+    console_log("C")

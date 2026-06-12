@@ -7,6 +7,9 @@ def console_log(args):
     for arg in args:
         if arg.startswith('"') and arg.endswith('"'):
             output.append(arg[1:-1])
+        elif arg not in variables:
+            print(f"Undefined variable: {arg}")
+            exit()
         else:
             output.append(str(variables[arg]))
     print(*output,sep="")
@@ -23,18 +26,20 @@ def check(args):
     condition = args[0]
     tokens = condition.split()
     
-    
-
     final = True
     for i in range(0,len(tokens),4):
         left = tokens[i]
         if left in variables:
             left = variables[left]
+        elif left.isdigit():
+            left = int(left)
         op = tokens[i+1]
         right = tokens[i+2]
         if right in variables:
             right = variables[right]
-        if op == '>' or op == '<':
+        elif right.isdigit():
+            right = int(right)
+        if op == '>' or op == '<' or op == "<=" or op == ">=":
             try:
                 left = int(left)
                 right = int(right)
@@ -50,6 +55,10 @@ def check(args):
             result = left > right
         elif op == '<':
             result = left < right
+        elif op == '<=':
+            result = left <= right
+        elif op == '>=':
+            result = left >= right
         else:
             print("invalid syntax for operatons")
             exit()
@@ -61,12 +70,17 @@ def check(args):
                 final = final and result
             if logic == 'or':
                 final = final or result
-        
-        
-        lastresult = result
     
     return final
 
+def skipblock(parsed_lines,start):
+    block_indent = parsed_lines[start]["indent"]
+    i = start + 1
+    while i < len(parsed_lines):
+        if parsed_lines[i]["indent"] <= block_indent:
+            return i
+        i+=1
+    return len(parsed_lines)
     
 #MAIN LOOP
 if len(sys.argv) < 2:
@@ -87,16 +101,28 @@ with open(path, "r") as f:
     variables = {}
     mainindex = 0
     currentindent = 0
+    if_stack = []
     while mainindex < len(lines):
         
-        line = lines[mainindex]
-        line = line.strip()
+        line = lines[mainindex].strip()
         
         parts = line.strip()
         
         if not line:
+            mainindex+=1
             continue
-            
+
+        if line == "else":
+            if len(if_stack) == 0:
+                print("Invalid: else without if")
+                exit()
+            result = if_stack.pop()
+            if result:
+                mainindex = skipblock(parsed_lines,mainindex)
+                continue
+            mainindex+=1
+            continue
+        
         #jesli funkcja 
         if "(" in line and ")" in line:
             #ciecie agrumentow
@@ -113,23 +139,22 @@ with open(path, "r") as f:
             if name == "if":
               
                 result = check(args)
+                if_stack.append(result)
                 print("\nDEBBUG: ",args)
                 print("DEBBUG: ",result,"\n")
     
                 if not result:
-                    blockindent = parsed_lines[mainindex]["indent"]
-                    while mainindex + 1 < len(parsed_lines):
-                        mainindex+=1
-                        
-                        if parsed_lines[mainindex]["indent"] <= blockindent:
-                            mainindex-=1
-                            break
+                    mainindex = skipblock(parsed_lines,mainindex) 
+                    continue
+            
+                    
                     
                 
  
         #jesli variable
         else:
             parts = line.split()
+            
             
             if parts[0] == "str":
                name = parts[1]
