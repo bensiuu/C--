@@ -1,19 +1,44 @@
 import sys
-
+from typing import NoReturn
 
 def console_log(args):
     global variables
     output = []
     for arg in args:
-        if arg.startswith('"') and arg.endswith('"'):
-            output.append(arg[1:-1])
-        elif arg not in variables:
-            print(f"Undefined variable: {arg}")
-            exit()
-        else:
-            output.append(str(variables[arg]))
+        output.append(str(resolve(arg)))
+        
     print(*output,sep="")
+def resolve(token):
+    token = token.strip()
+    try:
+        return int(token)
+    except ValueError:
+        pass
+    if "+" in token:
+        left, right = token.split("+",1)
+        return resolve(left) + resolve(right)
+    if "-" in token:
+        left, right = token.split("-",1)
+        return resolve(left) - resolve(right)
+    if "*" in token:
+        left, right = token.split("*",1)
+        return resolve(left) * resolve(right)
+    if "/" in token:
+        left, right = token.split("/",1)
+        return resolve(left) / resolve(right)
+    #end_math -----
+    if token in variables:
+        return variables[token]
 
+    if token.startswith('"') and token.endswith('"'):
+        return token[1:-1]
+
+    try:
+       return int(token)
+    except ValueError:
+        pass
+    error_print(f"Invalid token: {token}", mainindex)
+    
 def var_int(name, val):
     global variables
     variables[name] = int(val)
@@ -22,28 +47,29 @@ def var_str(name,string):
     global variables
     variables[name] = str(string)
 
+def error_print(msg, line) -> NoReturn:
+    print(f"Error ar line {line}: {msg}")
+    exit()
 def check(args):
     condition = args[0]
-    tokens = condition.split()
     
+    tokens = condition.split()
+    if len(tokens) == 1:
+        if tokens[0]:
+            return bool(resolve(tokens[0]))
+    elif len(tokens) < 3 :
+        error_print("Invalid condition",mainindex)
+        
     final = True
     for i in range(0,len(tokens),4):
-        left = tokens[i]
-        if left in variables:
-            left = variables[left]
-        elif left.isdigit():
-            left = int(left)
+        left = resolve(tokens[i])
+        right = resolve(tokens[i+2])
         op = tokens[i+1]
-        right = tokens[i+2]
-        if right in variables:
-            right = variables[right]
-        elif right.isdigit():
-            right = int(right)
-        if op == '>' or op == '<' or op == "<=" or op == ">=":
+        if op in ('>', '<', '<=', '>='):
             try:
                 left = int(left)
                 right = int(right)
-            except:
+            except ValueError:
                 print("invalid syntax for operations")
                 break
         
@@ -60,16 +86,19 @@ def check(args):
         elif op == '>=':
             result = left >= right
         else:
-            print("invalid syntax for operatons")
-            exit()
+            error_print(f"Invalid operator: {op}", mainindex)
+            return False
         if i == 0:
             final = result
         else:
-            logic = tokens[i-1]
-            if logic == "and":
-                final = final and result
-            if logic == 'or':
-                final = final or result
+            if logic in ["and","or"]:
+                logic = tokens[i-1]
+                if logic == "and":
+                    final = final and result
+                if logic == 'or':
+                    final = final or result
+            else:
+                error_print("Invalid logic operator",mainindex)
     
     return final
 
@@ -100,13 +129,10 @@ with open(path, "r") as f:
         })
     variables = {}
     mainindex = 0
-    currentindent = 0
     if_stack = []
     while mainindex < len(lines):
         
         line = lines[mainindex].strip()
-        
-        parts = line.strip()
         
         if not line:
             mainindex+=1
@@ -135,7 +161,7 @@ with open(path, "r") as f:
             if name == "console_log":
                 console_log(args)
 
-                
+        # IF --------------------------        
             if name == "if":
               
                 result = check(args)
@@ -146,7 +172,7 @@ with open(path, "r") as f:
                 if not result:
                     mainindex = skipblock(parsed_lines,mainindex) 
                     continue
-            
+        # IF_END --------------------- 
                     
                     
                 
