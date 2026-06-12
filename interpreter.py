@@ -1,43 +1,60 @@
+
 import sys
-from typing import NoReturn
 
 def console_log(args):
     global variables
     output = []
     for arg in args:
-        output.append(str(resolve(arg)))
         
+        output.append(str(resolve(arg)))
+    
     print(*output,sep="")
+
+#--------------------
+import ast
+import operator
+
+OPS = {
+    ast.Add: operator.add,
+    ast.Sub: operator.sub,
+    ast.Mult: operator.mul,
+    ast.Div: operator.truediv,
+    ast.USub: operator.neg
+}
+def eval_expr(node):
+    if isinstance(node, ast.Constant):
+        return node.value
+    if isinstance(node, ast.Name):
+        return variables[node.id]
+        
+    if isinstance(node, ast.BinOp):
+        return OPS[type(node.op)](
+            eval_expr(node.left),
+            eval_expr(node.right)
+        )
+        
+    if isinstance(node, ast.UnaryOp):
+        return OPS[type(node.op)](
+            eval_expr(node.operand)
+        )
+        
+    raise ValueError("Invalid expression")
+
+
+# resolve ----
 def resolve(token):
     token = token.strip()
-    try:
-        return int(token)
-    except ValueError:
-        pass
-    if "+" in token:
-        left, right = token.split("+",1)
-        return resolve(left) + resolve(right)
-    if "-" in token:
-        left, right = token.split("-",1)
-        return resolve(left) - resolve(right)
-    if "*" in token:
-        left, right = token.split("*",1)
-        return resolve(left) * resolve(right)
-    if "/" in token:
-        left, right = token.split("/",1)
-        return resolve(left) / resolve(right)
-    #end_math -----
-    if token in variables:
-        return variables[token]
 
+    if token == "endl":
+        return ""
+    
     if token.startswith('"') and token.endswith('"'):
         return token[1:-1]
-
     try:
-       return int(token)
-    except ValueError:
-        pass
-    error_print(f"Invalid token: {token}", mainindex)
+        tree = ast.parse(token,mode="eval")
+        return eval_expr(tree.body)
+    except Exception:
+        error_print(f"Invalid token: {token}", mainindex)
     
 def var_int(name, val):
     global variables
@@ -52,14 +69,12 @@ def error_print(msg, line) -> NoReturn:
     exit()
 def check(args):
     condition = args[0]
-    
     tokens = condition.split()
     if len(tokens) == 1:
         if tokens[0]:
             return bool(resolve(tokens[0]))
     elif len(tokens) < 3 :
         error_print("Invalid condition",mainindex)
-        
     final = True
     for i in range(0,len(tokens),4):
         left = resolve(tokens[i])
@@ -166,8 +181,8 @@ with open(path, "r") as f:
               
                 result = check(args)
                 if_stack.append(result)
-                print("\nDEBBUG: ",args)
-                print("DEBBUG: ",result,"\n")
+                #print("\nDEBBUG: ",args)
+                #print("DEBBUG: ",result,"\n")
     
                 if not result:
                     mainindex = skipblock(parsed_lines,mainindex) 
@@ -177,7 +192,7 @@ with open(path, "r") as f:
                     
                 
  
-        #jesli variable
+        #jesli variable +++++++++++++++++++++++++++++++++++++++
         else:
             parts = line.split()
             
@@ -200,5 +215,15 @@ with open(path, "r") as f:
                 except ValueError:
                     print("invalid syntax for integer variable")
                     break
+            if parts[0] not in ("int","str") and "=" in line:
+                name, expression = line.split('=', 1)
+                        
+                name = name.strip()
+                expression = expression.strip()
+                if name in variables:
+                    variables[name] = resolve(expression)
+                if name not in variables:
+                    error_print(f"Undefined variable: {name}", mainindex)
+                        
         
         mainindex+=1

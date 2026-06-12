@@ -1,0 +1,33 @@
+int score = 15
+int lives = 3
+
+console_log("=== GAME START ===")
+console_log("score = ", score)
+console_log("lives = ", lives)
+console_log(endl)
+score = score + 10
+
+if(score >= 20)
+    console_log("Bonus unlocked!")
+
+    if(lives > 0)
+        console_log("Player is alive")
+    else
+        console_log("Game Over")
+else
+    console_log("Need more points")
+
+lives = lives - 1
+
+console_log("score after bonus = ", score)
+console_log("lives after damage = ", lives)
+console_log(endl)
+if(lives)
+    console_log("Continue playing")
+else
+    console_log("No lives left")
+
+console_log("2 + 3 * 4 = ", 2 + 3 * 4)
+console_log("(2 + 3) * 4 = ", (2 + 3) * 4)
+
+console_log("=== END ===")
